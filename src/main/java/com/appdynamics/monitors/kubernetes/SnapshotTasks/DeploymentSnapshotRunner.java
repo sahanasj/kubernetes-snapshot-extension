@@ -61,8 +61,8 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
                     ApiClient client = Utilities.initClient(config);
                     client.setDebugging(true);
-                    client.getHttpClient().setReadTimeout(60000, TimeUnit.MILLISECONDS);
-                    client.getHttpClient().setConnectTimeout(80000, TimeUnit.MILLISECONDS);
+                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
+                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
                     Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
                     deployList =
