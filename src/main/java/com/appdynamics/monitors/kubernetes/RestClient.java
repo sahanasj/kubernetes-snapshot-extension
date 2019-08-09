@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.encoders.UrlBase64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_CONTROLLER_API_USER;
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_CONTROLLER_URL;
 import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_DASH_TEMPLATE_PATH;
 
 public class RestClient {
@@ -62,8 +60,9 @@ public class RestClient {
 
     public static JsonNode doRequest(URL url, Map<String, String> config, String accountName, String apiKey, String requestBody, String method) {
         BufferedReader br = null;
+        HttpURLConnection conn = null;
         try {
-            HttpURLConnection conn = openConnection(url, config);
+            conn = openConnection(url, config);
             conn.setDoOutput(true);
             if (method.equals("PATCH")) {
                 conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
@@ -96,6 +95,9 @@ public class RestClient {
             try {
                 if (br != null) {
                     br.close();
+                }
+                if(conn != null){
+                    conn.disconnect();
                 }
             }
             catch (IOException ex){
@@ -306,6 +308,10 @@ public class RestClient {
                 if (request != null){
                     request.close();
                 }
+                if (conn != null) {
+                    conn.disconnect();
+                }
+
             }
             catch (IOException ex){
                 logger.error("Error while cleaning up streams and buffers in createDashboard");

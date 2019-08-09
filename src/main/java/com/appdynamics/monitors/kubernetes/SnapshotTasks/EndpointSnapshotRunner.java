@@ -6,7 +6,6 @@ import com.appdynamics.extensions.util.AssertUtils;
 import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
-import com.appdynamics.monitors.kubernetes.RestClient;
 import com.appdynamics.monitors.kubernetes.Utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -22,14 +21,12 @@ import io.kubernetes.client.models.V1EndpointsList;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_RECS_BATCH_SIZE;
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_DEF_EP;
-import static com.appdynamics.monitors.kubernetes.Constants.CONFIG_SCHEMA_NAME_EP;
+import static com.appdynamics.monitors.kubernetes.Constants.*;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
 
 public class EndpointSnapshotRunner extends SnapshotRunnerBase {
@@ -63,7 +60,8 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 try {
 
                     ApiClient client = Utilities.initClient(config);
-
+                    client.getHttpClient().setReadTimeout(60000, TimeUnit.MILLISECONDS);
+                    client.getHttpClient().setConnectTimeout(80000, TimeUnit.MILLISECONDS);
                     Configuration.setDefaultApiClient(client);
                     CoreV1Api api = new CoreV1Api();
 

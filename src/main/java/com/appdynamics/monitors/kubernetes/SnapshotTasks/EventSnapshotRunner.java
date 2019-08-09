@@ -7,7 +7,6 @@ import com.appdynamics.monitors.kubernetes.Globals;
 import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
-import com.appdynamics.monitors.kubernetes.RestClient;
 import com.appdynamics.monitors.kubernetes.Utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,15 +14,20 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
-import io.kubernetes.client.models.*;
+import io.kubernetes.client.models.V1Event;
+import io.kubernetes.client.models.V1EventList;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
-import static com.appdynamics.monitors.kubernetes.Utilities.*;
+import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
+import static com.appdynamics.monitors.kubernetes.Utilities.checkAddObject;
 
 public class EventSnapshotRunner extends SnapshotRunnerBase {
 
@@ -55,7 +59,8 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
                 V1EventList eventList;
                 try {
                     ApiClient client = Utilities.initClient(config);
-
+                    client.getHttpClient().setReadTimeout(60000, TimeUnit.MILLISECONDS);
+                    client.getHttpClient().setConnectTimeout(80000, TimeUnit.MILLISECONDS);
                     Configuration.setDefaultApiClient(client);
                     CoreV1Api api = new CoreV1Api();
 
