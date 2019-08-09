@@ -60,6 +60,7 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
                 try {
 
                     ApiClient client = Utilities.initClient(config);
+                    client.setDebugging(true);
                     client.getHttpClient().setReadTimeout(60000, TimeUnit.MILLISECONDS);
                     client.getHttpClient().setConnectTimeout(80000, TimeUnit.MILLISECONDS);
                     Configuration.setDefaultApiClient(client);
