@@ -31,8 +31,8 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
 
     }
 
-    public NodeSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
-        super(serviceProvider, config, countDownLatch);
+    public NodeSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient apiClient){
+        super(serviceProvider, config, countDownLatch, apiClient);
 //        initMetrics(config);
     }
 

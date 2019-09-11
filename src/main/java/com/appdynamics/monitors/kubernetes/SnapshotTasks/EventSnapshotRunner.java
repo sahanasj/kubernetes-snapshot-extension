@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.models.V1Event;
 import io.kubernetes.client.models.V1EventList;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 import static com.appdynamics.monitors.kubernetes.Utilities.ALL;
@@ -35,8 +33,8 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
 
     }
 
-    public EventSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
-        super(serviceProvider, config, countDownLatch);
+    public EventSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient apiClient){
+        super(serviceProvider, config, countDownLatch, apiClient);
     }
 
     @SuppressWarnings("unchecked")
@@ -58,11 +56,11 @@ public class EventSnapshotRunner extends SnapshotRunnerBase {
             try {
                 V1EventList eventList;
                 try {
-                    ApiClient client = Utilities.initClient(config);
-                    client.setDebugging(true);
-                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
-                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
-                    Configuration.setDefaultApiClient(client);
+//                    ApiClient client = Utilities.initClient(config);
+//                    client.setDebugging(true);
+//                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
+//                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
+//                    Configuration.setDefaultApiClient(client);
                     CoreV1Api api = new CoreV1Api();
 
                     eventList = api.listEventForAllNamespaces(null,

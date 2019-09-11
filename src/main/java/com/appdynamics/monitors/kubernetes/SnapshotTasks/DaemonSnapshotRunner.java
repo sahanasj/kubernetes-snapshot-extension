@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.models.V1beta1DaemonSet;
 import io.kubernetes.client.models.V1beta1DaemonSetList;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -33,8 +31,8 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
 
     }
 
-    public DaemonSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
-        super(serviceProvider, config, countDownLatch);
+    public DaemonSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient client){
+        super(serviceProvider, config, countDownLatch, client);
     }
 
     @SuppressWarnings("unchecked")
@@ -55,11 +53,11 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
             try {
                 V1beta1DaemonSetList dsList;
                 try {
-                    ApiClient client = Utilities.initClient(config);
-                    client.setDebugging(true);
-                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
-                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
-                    Configuration.setDefaultApiClient(client);
+//                    ApiClient client = Utilities.initClient(config);
+//                    client.setDebugging(true);
+//                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
+//                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
+//                    Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
 
                     dsList = api.listDaemonSetForAllNamespaces(null, null, true, null, null, null, null, null, null);

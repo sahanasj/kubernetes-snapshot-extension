@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes;
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.extensions.util.StringUtils;
 import com.appdynamics.monitors.kubernetes.Dashboard.ClusterDashboardGenerator;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
@@ -12,6 +11,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 
@@ -39,7 +41,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
             CONFIG_ENTITY_TYPE_REPLICA};
 
     private CountDownLatch latch;
-    public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
+//    public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
 
 
     @Override
@@ -67,10 +69,13 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     int count = entities.size();
                     latch = new CountDownLatch(count);
 
+                    ApiClient client = null;
+                    client = getApiClient();
+
                     for (String taskName : TASKS) {
                         Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
                         if (taskConfig != null) {
-                            tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName));
+                            tasks.add(initTask(tasksExecutionServiceProvider, taskConfig, taskName, client));
                         }
                     }
 
@@ -138,32 +143,57 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
 
     }
 
-    private SnapshotRunnerBase initTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, String taskName){
+    //init the client with config params
+    private SnapshotRunnerBase initTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, Map<String, String> config, String taskName, ApiClient client) throws Exception{
         SnapshotRunnerBase task = null;
+
         switch (taskName){
             case CONFIG_ENTITY_TYPE_POD:
-                task = new PodSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new PodSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
             case CONFIG_ENTITY_TYPE_NODE:
-                task = new NodeSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new NodeSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
             case CONFIG_ENTITY_TYPE_DEPLOYMENT:
-                task = new DeploymentSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new DeploymentSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
             case CONFIG_ENTITY_TYPE_DAEMON:
-                task = new DaemonSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new DaemonSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
             case CONFIG_ENTITY_TYPE_ENDPOINT:
-                task = new EndpointSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new EndpointSnapshotRunner(tasksExecutionServiceProvider, config, latch, client );
                 break;
             case CONFIG_ENTITY_TYPE_REPLICA:
-                task = new ReplicaSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new ReplicaSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
             case CONFIG_ENTITY_TYPE_EVENT:
-                task = new EventSnapshotRunner(tasksExecutionServiceProvider, config, latch);
+                task = new EventSnapshotRunner(tasksExecutionServiceProvider, config, latch, client);
                 break;
         }
         return task;
+    }
+
+    private ApiClient getApiClient() throws Exception {
+        Map<String, ?> config = configuration.getConfigYml();
+        ApiClient client = Utilities.initClient(( Map<String, String> )config);
+        Map<String, ?> kubeClientConfig = (Map<String, ?>) config.get("kubeClient");
+        if(kubeClientConfig.get("enableDebugLogging")!= null) {
+           logger.debug("Setting debug level to "+ Boolean.valueOf(kubeClientConfig.get("enableDebugLogging").toString()));
+            client.setDebugging(Boolean.valueOf(kubeClientConfig.get("enableDebugLogging").toString()));
+        }
+        if(kubeClientConfig.get("readTimeoutMilliSeconds")!= null) {
+            Long readTimeout = Long.parseLong(kubeClientConfig.get("readTimeoutMilliSeconds").toString());
+            logger.debug("Setting read timeout to"+ readTimeout  );
+            client.getHttpClient().setReadTimeout(readTimeout, TimeUnit.MILLISECONDS);
+        }
+        if(kubeClientConfig.get("connectTimeoutMilliSeconds")!= null) {
+            Long connectTimeout = Long.parseLong(kubeClientConfig.get("connectTimeoutMilliSeconds").toString());
+            logger.debug("Setting connect timeout to"+ connectTimeout );
+            client.getHttpClient().setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
+        }
+
+        Configuration.setDefaultApiClient(client);
+        return client;
     }
 
     private void executeSnapshotTask(TasksExecutionServiceProvider tasksExecutionServiceProvider, SnapshotRunnerBase task){

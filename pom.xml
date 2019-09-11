@@ -6,7 +6,9 @@
 
     <groupId>com.appdynamics.monitors</groupId>
     <artifactId>kubernetes-snapshot-extension</artifactId>
-    <version>0.9</version>
+    <version>0.91</version>
+    <packaging>jar</packaging>
+    <name>kubernetes-snapshot-extension</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -72,6 +74,16 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dkorobtsov</groupId>
+            <artifactId>LoggingInterceptor</artifactId>
+            <version>4.5</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>org.mockito</groupId>-->
@@ -185,6 +197,10 @@
         </plugins>
     </build>
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <repository>
             <id>github-maven-repo</id>
             <releases>

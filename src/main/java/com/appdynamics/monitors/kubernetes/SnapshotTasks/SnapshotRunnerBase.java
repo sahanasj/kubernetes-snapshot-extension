@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.kubernetes.client.ApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +32,19 @@ public abstract class SnapshotRunnerBase implements AMonitorTaskRunnable {
     private MonitorConfiguration configuration;
     private String taskName;
     private Map<String, String> entityConfig = null;
+    private ApiClient apiClient;
 
     public SnapshotRunnerBase(){
 
     }
 
-    public SnapshotRunnerBase(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
+    public SnapshotRunnerBase(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient apiClient){
         configuration = serviceProvider.getMonitorConfiguration();
         this.serviceProvider = serviceProvider;
         this.setEntityConfig(config);
         this.setTaskName(config.get(Constants.CONFIG_ENTITY_TYPE));
         this.countDownLatch = countDownLatch;
+        this.apiClient = apiClient;
     }
 
     public MonitorConfiguration getConfiguration() {

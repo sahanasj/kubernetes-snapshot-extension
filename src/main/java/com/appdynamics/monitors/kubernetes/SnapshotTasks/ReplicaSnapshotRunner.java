@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.models.V1beta1ReplicaSet;
 import io.kubernetes.client.models.V1beta1ReplicaSetList;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -32,8 +30,8 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
 
     }
 
-    public ReplicaSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
-        super(serviceProvider, config, countDownLatch);
+    public ReplicaSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient apiClient){
+        super(serviceProvider, config, countDownLatch, apiClient);
     }
 
     @SuppressWarnings("unchecked")
@@ -54,11 +52,11 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
             try {
                 V1beta1ReplicaSetList rsList;
                 try {
-                    ApiClient client = Utilities.initClient(config);
-                    client.setDebugging(true);
-                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
-                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
-                    Configuration.setDefaultApiClient(client);
+//                    ApiClient client = Utilities.initClient(config);
+//                    client.setDebugging(true);
+//                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
+//                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
+//                    Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
 
                     rsList = api.listReplicaSetForAllNamespaces(null, null, true, null, null, null, null, null, null);

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.models.ExtensionsV1beta1Deployment;
 import io.kubernetes.client.models.ExtensionsV1beta1DeploymentList;
@@ -23,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static com.appdynamics.monitors.kubernetes.Constants.*;
 import static com.appdynamics.monitors.kubernetes.Utilities.*;
@@ -35,8 +33,8 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
     }
 
 
-    public DeploymentSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch){
-        super(serviceProvider, config, countDownLatch);
+    public DeploymentSnapshotRunner(TasksExecutionServiceProvider serviceProvider, Map<String, String> config, CountDownLatch countDownLatch, ApiClient client){
+        super(serviceProvider, config, countDownLatch, client);
     }
 
     @SuppressWarnings("unchecked")
@@ -59,11 +57,11 @@ public class DeploymentSnapshotRunner extends SnapshotRunnerBase {
 
                 try {
 
-                    ApiClient client = Utilities.initClient(config);
-                    client.setDebugging(true);
-                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
-                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
-                    Configuration.setDefaultApiClient(client);
+//                    ApiClient client = Utilities.initClient(config);
+//                    client.setDebugging(true);
+//                    client.getHttpClient().setReadTimeout(80000, TimeUnit.MILLISECONDS);
+//                    client.getHttpClient().setConnectTimeout(60000, TimeUnit.MILLISECONDS);
+//                    Configuration.setDefaultApiClient(client);
                     ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
                     deployList =
                             api.listDeploymentForAllNamespaces(null, null, true, null, null, null, null, null, null);

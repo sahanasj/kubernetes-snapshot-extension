@@ -46,6 +46,10 @@ proxyUser: ""
 #APPD_PROXY_PASS
 proxyPass: ""
 
+kubeClient:
+  enableDebugLogging: true #if empty, defaults to false
+  readTimeoutMilliSeconds: "80000" #if empty, defaults to 10 seconds
+  connectTimeoutMilliSeconds: "60000" #if empty, defaults to 10 seconds
 
 entities:
 - type: "pod"
@@ -84,7 +88,7 @@ controllerUrl: "http://staging.demo.appdynamics.com/controller/" # REST_API_URL 
 dashboardCheckInterval: "600"
 
 # Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
-eventsUrl: "https://analytics.api.appdynamics.com"  # EVENTS_API_URL env var
+eventsUrl: "http://"  # EVENTS_API_URL env var
 
 
 podsSchemaDefinition: '{

@@ -8,12 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.util.Config;
+import io.kubernetes.client.util.ClientBuilder;
+import io.kubernetes.client.util.KubeConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -389,15 +391,17 @@ public class Utilities {
 
         if (apiMode.equals("server")) {
             try {
-                client = Config.fromConfig(config.get("kubeClientConfig"));
+                client = ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(config.get("kubeClientConfig")))).build();
+                logger.debug("using kubeconfig from"+config.get("kubeClientConfig"));
             }
             catch (Exception ex){
                 logger.info("K8s API client cannot be initialized form the config file {}. Reason {}. Trying cluster creds", config.get("kubeClientConfig"), ex.getMessage());
-                client = Config.fromCluster();
+                client = ClientBuilder.cluster().build();
             }
         }
         else if (apiMode.equals("cluster")){
-            client = Config.fromCluster();
+            client = ClientBuilder.cluster().build();
+            logger.debug("using in-cluster client");
         }
         else{
             throw new Exception(String.format("apiMode %s not supported. Must be server or cluster", apiMode));
