@@ -13,6 +13,9 @@ kubeClientConfig: "/home/origin/.kube/config"
 #server or cluster
 apiMode: "server"  #K8S_API_MODE env var
 
+# Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
+eventsUrl: "http://"  # EVENTS_API_URL env var
+
 # Events API Key obtained from AppDynamics --> Analytics --> Configuration API Keys --> Add
 # The API Key you create needs to be able to Manage and Publish Custom Analytics Events
 eventsApiKey: ""  # EVENT_ACCESS_KEY env var
@@ -86,10 +89,6 @@ controllerUrl: "http://staging.demo.appdynamics.com/controller/" # REST_API_URL 
 
 #Time in seconds between the checks if the default dashboard exists
 dashboardCheckInterval: "600"
-
-# Events Service Endpoint. These Default settings are for SaaS Users. Change if you are on Premise
-eventsUrl: "http://"  # EVENTS_API_URL env var
-
 
 podsSchemaDefinition: '{
    "schema" : {
