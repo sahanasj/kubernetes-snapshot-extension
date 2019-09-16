@@ -41,6 +41,7 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
             CONFIG_ENTITY_TYPE_REPLICA};
 
     private CountDownLatch latch;
+    ApiClient client = null;
 //    public KubernetesSnapshotExtension() { logger.info(String.format("Using Kubernetes Snapshot Extension Version [%s]", getImplementationVersion())); }
 
 
@@ -69,8 +70,9 @@ public class KubernetesSnapshotExtension extends ABaseMonitor {
                     int count = entities.size();
                     latch = new CountDownLatch(count);
 
-                    ApiClient client = null;
-                    client = getApiClient();
+                    if(client == null) {
+                        client = getApiClient();
+                    }
 
                     for (String taskName : TASKS) {
                         Map<String, String> taskConfig = Utilities.getEntityConfig(entities, taskName);
