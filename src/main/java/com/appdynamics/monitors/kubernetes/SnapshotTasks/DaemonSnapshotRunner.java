@@ -74,11 +74,14 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
                 getConfiguration().getExecutorService().execute("UploadDaemonMetricsTask", podMetricsTask);
 
             } catch (IOException e) {
-                countDownLatch.countDown();
+               // countDownLatch.countDown();
                 logger.error("Failed to push Daemonsets data", e);
             } catch (Exception e) {
-                countDownLatch.countDown();
+                // countDownLatch.countDown();
                 logger.error("Failed to push Daemonsets data", e);
+            }finally {
+                countDownLatch.countDown();
+                logger.debug("Completed DaemonSnapshotRunner ");
             }
         }
     }

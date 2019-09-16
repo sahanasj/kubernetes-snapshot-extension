@@ -88,10 +88,13 @@ public class NodeSnapshotRunner extends SnapshotRunnerBase {
                 //check searches
             } catch (IOException e) {
                 logger.error("Failed to push Node data", e);
-                countDownLatch.countDown();
+//                countDownLatch.countDown();
             } catch (Exception e) {
-                countDownLatch.countDown();
+//                countDownLatch.countDown();
                 logger.error("Failed to push Node data", e);
+            }finally {
+                countDownLatch.countDown();
+                logger.debug("Completed NodeSnapshotRunner ");
             }
         }
     }

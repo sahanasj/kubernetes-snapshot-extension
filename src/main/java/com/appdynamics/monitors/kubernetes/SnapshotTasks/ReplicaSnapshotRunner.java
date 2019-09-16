@@ -75,11 +75,14 @@ public class ReplicaSnapshotRunner extends SnapshotRunnerBase {
                 getConfiguration().getExecutorService().execute("UploadRSMetricsTask", metricsTask);
 
             } catch (IOException e) {
-                countDownLatch.countDown();
+//                countDownLatch.countDown();
                 logger.error("Failed to push ReplicaSet data", e);
             } catch (Exception e) {
-                countDownLatch.countDown();
+//                countDownLatch.countDown();
                 logger.error("Failed to push ReplicaSet data", e);
+            }finally {
+                countDownLatch.countDown();
+                logger.debug("Completed ReplicaSnapshotRunner ");
             }
         }
     }
