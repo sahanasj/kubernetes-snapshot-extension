@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes.SnapshotTasks;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.appdynamics.monitors.kubernetes.Utilities;
@@ -70,9 +69,10 @@ public class DaemonSnapshotRunner extends SnapshotRunnerBase{
 
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} Daemon set metrics", metricList.size());
-                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
-                getConfiguration().getExecutorService().execute("UploadDaemonMetricsTask", podMetricsTask);
-
+//                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
+//                getConfiguration().getExecutorService().execute("UploadDaemonMetricsTask", podMetricsTask);
+                logger.info("Executing Metrics update");
+                getServiceProvider().getMetricWriteHelper().transformAndPrintMetrics(metricList);
             } catch (IOException e) {
                // countDownLatch.countDown();
                 logger.error("Failed to push Daemonsets data", e);

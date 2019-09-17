@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes.SnapshotTasks;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.appdynamics.monitors.kubernetes.Utilities;
@@ -85,8 +84,10 @@ public class PodSnapshotRunner extends SnapshotRunnerBase {
                 //build and update metrics
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} pod metrics", metricList.size());
-                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
-                getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
+//                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
+//                getConfiguration().getExecutorService().execute("UploadMetricsTask", podMetricsTask);
+                logger.info("Executing Metrics update");
+                getServiceProvider().getMetricWriteHelper().transformAndPrintMetrics(metricList);
 
                 //check searches
             } catch (IOException e) {

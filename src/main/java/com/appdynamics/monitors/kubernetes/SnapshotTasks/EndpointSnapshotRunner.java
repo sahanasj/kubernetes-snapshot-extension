@@ -3,7 +3,6 @@ package com.appdynamics.monitors.kubernetes.SnapshotTasks;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.metrics.Metric;
 import com.appdynamics.extensions.util.AssertUtils;
-import com.appdynamics.monitors.kubernetes.Metrics.UploadMetricsTask;
 import com.appdynamics.monitors.kubernetes.Models.AppDMetricObj;
 import com.appdynamics.monitors.kubernetes.Models.SummaryObj;
 import com.appdynamics.monitors.kubernetes.Utilities;
@@ -84,8 +83,10 @@ public class EndpointSnapshotRunner extends SnapshotRunnerBase {
 
                 List<Metric> metricList = getMetricsFromSummary(getSummaryMap(), config);
                 logger.info("About to send {} endpoints metrics", metricList.size());
-                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
-                getConfiguration().getExecutorService().execute("UploadEPMetricsTask", podMetricsTask);
+//                UploadMetricsTask podMetricsTask = new UploadMetricsTask(getConfiguration(), getServiceProvider().getMetricWriteHelper(), metricList, countDownLatch);
+//                getConfiguration().getExecutorService().execute("UploadEPMetricsTask", podMetricsTask);
+                logger.info("Executing Metrics update");
+                getServiceProvider().getMetricWriteHelper().transformAndPrintMetrics(metricList);
             } catch (IOException e) {
 //                countDownLatch.countDown();
                 logger.error("Failed to push End Points data", e);
